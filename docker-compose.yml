@@ -1,0 +1,92 @@
+version: '3.9'
+
+services:
+  # Config Server
+  config-server:
+    build: ./configserver-service
+    image: hadhem/configserver:1.0
+    container_name: configserver-timeforge
+    ports:
+      - "8888:8888"
+    depends_on:
+      - discovery-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  # Discovery Service (Eureka)
+  discovery-service:
+    build: ./discovery-service
+    image: hadhem/discovery:1.0
+    container_name: discovery-timeforge
+    ports:
+      - "8761:8761"
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    image: hadhem/apigateway:1.0
+    container_name: apigateway-timeforge
+    ports:
+      - "9999:9999"
+    depends_on:
+      - discovery-service
+      - config-server
+      - goal-service
+      - project-service
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+
+  # Goal Service
+  goal-service:
+    build: ./goal-service
+    image: hadhem/goal:1.0
+    container_name: goal-timeforge
+    ports:
+      - "8095:8095"
+    depends_on:
+      - mysqldb
+      - discovery-service
+      - config-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/goalDB?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+
+  # Project Service
+  project-service:
+    build: ./project-service
+    image: hadhem/project:1.0
+    container_name: project-timeforge
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysqldb
+      - discovery-service
+      - config-server
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/projectDB?createDatabaseIfNotExist=true&useSSL=false
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+
+  # MySQL Database
+  mysqldb:
+    image: mysql:8.0
+    container_name: mysql-timeforge
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=projectDB
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:

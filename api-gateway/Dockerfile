@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/*.jar app.jar
 
 # Exposer le port du microservice (adapter selon chaque service)
-EXPOSE 8081
+EXPOSE 8222
 
 # Lancer l'application
 ENTRYPOINT ["java", "-jar", "app.jar"]
