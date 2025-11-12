@@ -1,0 +1,26 @@
+server:
+  port: 8097
+
+spring:
+  application:
+    name: collaboration-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/collaboration
+    username: tf_user
+    password: tf_pass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  flyway:
+    enabled: false
+
+eureka:
+  client:
+    enabled: false
+  instance:
+    prefer-ip-address: true
