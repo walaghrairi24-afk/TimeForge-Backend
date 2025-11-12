@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/goal-service/pom.xml" />
         <option value="$PROJECT_DIR$/discovery-service/pom.xml" />
         <option value="$PROJECT_DIR$/configserver-service/pom.xml" />
+        <option value="$PROJECT_DIR$/task-service-yassine/pom.xml" />
+        <option value="$PROJECT_DIR$/reward-service/pom.xml" />
       </list>
     </option>
   </component>
